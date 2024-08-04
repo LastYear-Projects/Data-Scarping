@@ -94,7 +94,7 @@ const pipeToSwipeAdvisor = (data) => {
   const newBenefits = data.map((benefit) => ({
     businessName: benefit.title,
     businessSubTitle: benefit.subTitle,
-    creditCardId: '665ded19f226c056771ddf27',
+    creditCardId: '6658b688892bce96bd5d588f',
     discountType: 'cashback',
     valueType: benefit.title.includes('%') ? 'percentage' : 'number',
     value: extractNumber(benefit.title),
