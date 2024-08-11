@@ -43,6 +43,7 @@ async function scrapeWebsite(url) {
     $('.category-item').each((index, element) => {
       const title = $(element).find('.caption-title').text().trim();
       const subTitle = $(element).find('.caption-sub-title').text().trim();
+      const firstWordOfSubTitle = getFirstWord(subTitle);
       const backgroundImage = $(element)
         .find('.category-featured-benefit')
         .css('background-image');
@@ -50,11 +51,11 @@ async function scrapeWebsite(url) {
       // Only include items with cashback-related keywords
       if (
         containsCashbackKeywords(title) ||
-        containsCashbackKeywords(subTitle)
+        containsCashbackKeywords(firstWordOfSubTitle)
       ) {
         cashbackItems.push({
           title: reorderBidiText(title),
-          subTitle: subTitle,
+          subTitle: firstWordOfSubTitle,
           backgroundImage,
         });
       }
@@ -88,6 +89,19 @@ async function scrapeWebsite(url) {
   } catch (error) {
     console.error(`Error scraping the website ${url}:`, error);
   }
+
+
+  function getFirstWord(text) {
+    // Trim any extra spaces
+    text = text.trim();
+
+    // Define the regular expression to match common delimiters
+    const delimiterPattern = /[ \-_.,;:|!]/;
+
+    // Split the text by the defined delimiters and return the first part
+    return text.split(delimiterPattern)[0].trim();
+  }
+
 }
 
 const pipeToSwipeAdvisor = (data) => {
