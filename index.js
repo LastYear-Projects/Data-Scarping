@@ -2,6 +2,7 @@ import axios from 'axios';
 import cheerio from 'cheerio';
 
 // Function to check if the text contains cashback-related keywords
+const cashbackItems = [];
 function containsCashbackKeywords(text) {
   const keywords = ['קאשבק', 'קאשבאק', 'כסף בחזרה', 'החזר כספי'];
   return keywords.some((keyword) => text.includes(keyword));
@@ -57,8 +58,7 @@ async function scrapeWebsiteIsracrd(url) {
     const $ = cheerio.load(data);
 
 
-    // Step 3: Extract the data you need
-    const cashbackItems = [];
+
     $('.category-item').each((index, element) => {
       const title = $(element).find('.caption-title').text().trim();
       const subTitle = $(element).find('.caption-sub-title').text().trim();
@@ -107,7 +107,6 @@ async function scrapeWebsiteIsracrd(url) {
     }
 
     // Step 5: Print the extracted data
-    console.log(`Data from ${url}:`, cashbackItems);
     pipeToSwipeAdvisor(cashbackItems);
   } catch (error) {
     console.error(`Error scraping the website ${url}:`, error);
@@ -137,12 +136,11 @@ async function scrapeWebsiteHever(url) {
   try {
     const { data } = await axios.get(url);
     const $ = cheerio.load(data);
-    const cashbackItems = [];
     const baseUrl = new URL(url).origin;
 
     $('.retailer_preview ').each((index, element) => {
-      const title = $(element).find('.tete.ellipsis').text().trim();
-      const subTitle = $(element).find('.slider h4 ').text().trim();
+      const title = $(element).find('.slider h4 ').text().trim();
+      const subTitle = $(element).find('.tete.ellipsis').text().trim();
       // Extract image URL from src attribute
       const imageUrl = $(element).find('.preview_logo').attr('data-src');
       // Convert relative URL to absolute URL
@@ -207,21 +205,23 @@ async function scrapeWebsiteHever(url) {
 
 const pipeToSwipeAdvisor = (data) => {
   const newBenefits = data.map((benefit) => ({
-    businessName: benefit.title,
+    businessName: reorderBidiText(benefit.title),
     businessSubTitle: reorderBidiText(benefit.subTitle),
     creditCardId: '6658b688892bce96bd5d588f',
     discountType: 'cashback',
     valueType: benefit.subTitle.includes('%') ? 'percentage' : 'number',
     value: extractNumber(benefit.subTitle),
-    minPurchaseAmount: 0,
   }));
 
   console.log('Piped data to SwipeAdvisor:', newBenefits);
 };
 
 
-// scrapeWebsiteIsracrd('https://benefits.isracard.co.il/parentcategories/online-benefits/');
+scrapeWebsiteIsracrd('https://benefits.isracard.co.il/parentcategories/online-benefits/');
 scrapeWebsiteHever('https://www.cashback-hvr.co.il/all-shops?mid=4198574&sig=54948354b4a0cc12c9879cfc4c1c8dbf');
+
+console.log('founded ',cashbackItems.length);
+
 
 
 
