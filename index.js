@@ -107,7 +107,7 @@ async function scrapeWebsiteIsracrd(url) {
     }
 
     // Step 5: Print the extracted data
-    pipeToSwipeAdvisor(cashbackItems);
+    pipeToSwipeAdvisor(cashbackItems,'6658b688892bce96bd5d588f');
   } catch (error) {
     console.error(`Error scraping the website ${url}:`, error);
     if (retries > 0) {
@@ -139,8 +139,8 @@ async function scrapeWebsiteHever(url) {
     const baseUrl = new URL(url).origin;
 
     $('.retailer_preview ').each((index, element) => {
-      const title = $(element).find('.slider h4 ').text().trim();
-      const subTitle = $(element).find('.tete.ellipsis').text().trim();
+      const subTitle = $(element).find('.slider h4 ').text().trim();
+      const title = $(element).find('.tete.ellipsis').text().trim();
       // Extract image URL from src attribute
       const imageUrl = $(element).find('.preview_logo').attr('data-src');
       // Convert relative URL to absolute URL
@@ -168,12 +168,10 @@ async function scrapeWebsiteHever(url) {
 
           const cashbackTitle = $detail('.cashBack-title').text().trim();
           const cashbackDescription = $detail('.cashBack-description').text().trim();
-          const dedicatedCoupon = $detail('.dedicate-coupon-block-store-coupon').text().trim();
 
           item.cashbackDetails = {
             title: reorderBidiText(cashbackTitle),
             description: reorderBidiText(cashbackDescription),
-            dedicatedCoupon: reorderBidiText(dedicatedCoupon),
           };
         } catch (detailError) {
           console.error(`Error fetching details for item ${item.title}:`, detailError);
@@ -183,7 +181,7 @@ async function scrapeWebsiteHever(url) {
 
     // Step 5: Print the extracted data
     // console.log(`Data from ${url}:`, cashbackItems);
-    pipeToSwipeAdvisor(cashbackItems);
+    pipeToSwipeAdvisor(cashbackItems,'66bb7766995330bf77f4ccb2');
   } catch (error) {
     console.error(`Error scraping the website ${url}:`, error);
   }
@@ -203,11 +201,12 @@ async function scrapeWebsiteHever(url) {
 }
 
 
-const pipeToSwipeAdvisor = (data) => {
+const pipeToSwipeAdvisor = (data, creditCardId) => {
+  //TODO add the option to use the credit card acording to each function
   const newBenefits = data.map((benefit) => ({
     businessName: reorderBidiText(benefit.title),
     businessSubTitle: reorderBidiText(benefit.subTitle),
-    creditCardId: '6658b688892bce96bd5d588f',
+    creditCardId: creditCardId,
     discountType: 'cashback',
     valueType: benefit.subTitle.includes('%') ? 'percentage' : 'number',
     value: extractNumber(benefit.subTitle),
@@ -217,10 +216,9 @@ const pipeToSwipeAdvisor = (data) => {
 };
 
 
-scrapeWebsiteIsracrd('https://benefits.isracard.co.il/parentcategories/online-benefits/');
-scrapeWebsiteHever('https://www.cashback-hvr.co.il/all-shops?mid=4198574&sig=54948354b4a0cc12c9879cfc4c1c8dbf');
+// scrapeWebsiteIsracrd('https://benefits.isracard.co.il/parentcategories/online-benefits/');
+scrapeWebsiteHever('https://www.cashback-hvr.co.il/all-shops?mid=269341&sig=d3a57daf4636f8b19e77834757bd3b1b');
 
-console.log('founded ',cashbackItems.length);
 
 
 
