@@ -202,7 +202,6 @@ async function scrapeWebsiteHever(url) {
 
 
 const pipeToSwipeAdvisor = (data, creditCardId) => {
-  //TODO add the option to use the credit card acording to each function
   const newBenefits = data.map((benefit) => ({
     businessName: reorderBidiText(benefit.title),
     businessSubTitle: reorderBidiText(benefit.subTitle),
