@@ -27,7 +27,7 @@ function extractNumber(text) {
 }
 
 // Function to reorder bidirectional text manually
-function reorderBidiText(text) {
+function reOrderBidiText(text) {
   // Check if the entire text is in Hebrew
   if (/^[\u0590-\u05FF\s]+$/.test(text)) {
     // Reverse the entire string
@@ -73,7 +73,7 @@ async function scrapeWebsiteIsracrd(url) {
         containsCashbackKeywords(firstWordOfSubTitle)
       ) {
         cashbackItems.push({
-          title: reorderBidiText(title),
+          title: reOrderBidiText(title),
           subTitle: firstWordOfSubTitle,
           backgroundImage,
         });
@@ -96,9 +96,9 @@ async function scrapeWebsiteIsracrd(url) {
           const dedicatedCoupon = $detail('.dedicate-coupon-block-store-coupon').text().trim();
 
           item.cashbackDetails = {
-            title: reorderBidiText(cashbackTitle),
-            description: reorderBidiText(cashbackDescription),
-            dedicatedCoupon: reorderBidiText(dedicatedCoupon),
+            title: reOrderBidiText(cashbackTitle),
+            description: reOrderBidiText(cashbackDescription),
+            dedicatedCoupon: reOrderBidiText(dedicatedCoupon),
           };
         } catch (detailError) {
           console.error(`Error fetching details for item ${item.title}:`, detailError);
@@ -139,8 +139,8 @@ async function scrapeWebsiteHever(url) {
     const baseUrl = new URL(url).origin;
 
     $('.retailer_preview ').each((index, element) => {
-      const subTitle = $(element).find('.slider h4 ').text().trim();
       const title = $(element).find('.tete.ellipsis').text().trim();
+      const subTitle = $(element).find('.slider h4 ').text().trim();
       // Extract image URL from src attribute
       const imageUrl = $(element).find('.preview_logo').attr('data-src');
       // Convert relative URL to absolute URL
@@ -148,7 +148,7 @@ async function scrapeWebsiteHever(url) {
 
       if (containsCashbackKeywords(title) || containsCashbackKeywords(subTitle)) {
         cashbackItems.push({
-          title: reorderBidiText(title),
+          title: reOrderBidiText(title),
           subTitle: subTitle,
            backgroundImage,
         });
@@ -170,8 +170,8 @@ async function scrapeWebsiteHever(url) {
           const cashbackDescription = $detail('.cashBack-description').text().trim();
 
           item.cashbackDetails = {
-            title: reorderBidiText(cashbackTitle),
-            description: reorderBidiText(cashbackDescription),
+            title: reOrderBidiText(cashbackTitle),
+            description: reOrderBidiText(cashbackDescription),
           };
         } catch (detailError) {
           console.error(`Error fetching details for item ${item.title}:`, detailError);
@@ -203,8 +203,8 @@ async function scrapeWebsiteHever(url) {
 
 const pipeToSwipeAdvisor = (data, creditCardId) => {
   const newBenefits = data.map((benefit) => ({
-    businessName: reorderBidiText(benefit.title),
-    businessSubTitle: reorderBidiText(benefit.subTitle),
+    businessName: reOrderBidiText(benefit.title),
+    businessSubTitle: reOrderBidiText(benefit.subTitle),
     creditCardId: creditCardId,
     discountType: 'cashback',
     valueType: benefit.subTitle.includes('%') ? 'percentage' : 'number',
@@ -215,7 +215,7 @@ const pipeToSwipeAdvisor = (data, creditCardId) => {
 };
 
 
-// scrapeWebsiteIsracrd('https://benefits.isracard.co.il/parentcategories/online-benefits/');
+scrapeWebsiteIsracrd('https://benefits.isracard.co.il/parentcategories/online-benefits/');
 scrapeWebsiteHever('https://www.cashback-hvr.co.il/all-shops?mid=269341&sig=d3a57daf4636f8b19e77834757bd3b1b');
 
 
